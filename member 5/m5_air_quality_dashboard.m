@@ -1,4 +1,4 @@
-function m5_air_quality_dashboard(t, fs)
+function m5_air_quality_dashboard(t)
 
 % =========================================
 % Simulated CO2 + Temperature

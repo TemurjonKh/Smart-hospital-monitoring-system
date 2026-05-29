@@ -30,6 +30,14 @@ end
 % RR Intervals
 % =========================================
 
+if length(peak_locs) < 2
+    warning('m6_extract_rr: fewer than 2 R-peaks detected — check signal quality.');
+    rr_intervals = [];
+    rr_times     = [];
+    fprintf('R-peaks detected: %d (insufficient for RR analysis)\n', length(peak_locs));
+    return;
+end
+
 rr_intervals = diff(t(peak_locs));
 
 rr_times = t(peak_locs(1:end-1));

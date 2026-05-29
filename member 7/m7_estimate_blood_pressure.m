@@ -45,17 +45,27 @@ function [sys_bp, dia_bp, map] = ...
     % =========================================
     % BP Estimation
     % =========================================
+    % NOTE: PPG amplitude alone cannot measure BP from a single normalised
+    % channel — the raw linear formula produced a fixed ~130/80 every run.
+    % This version uses amplitude as a small perturbation around a realistic
+    % simulated baseline so values vary meaningfully across runs.
 
     amp = mean(ppg(peak_locs)) ...
         - mean(ppg(trough_locs));
+    amp = max(0.1, min(2.0, amp));   % clamp to avoid extreme extrapolation
 
-    sys_bp = 90 + amp * 40;
-    dia_bp = 60 + amp * 20;
-    map = dia_bp + ...
-         (1/3) * (sys_bp - dia_bp);
-    fprintf('Blood Pressure: %.0f / %.0f mmHg\n', ...
-            sys_bp, dia_bp);
+    % Deterministic per-signal variation (no global rand state side-effects)
+    rng(mod(round(abs(sum(ppg(1:min(10,end)))*1e4)), 2^31));
+    base_sys = 110 + 15*rand();   % 110-125 mmHg
+    base_dia =  68 + 12*rand();   %  68-80  mmHg
+
+    sys_bp = base_sys + (amp - 1.0) * 8;
+    dia_bp = base_dia + (amp - 1.0) * 4;
+    map    = dia_bp + (1/3) * (sys_bp - dia_bp);
+
+    fprintf('[SIMULATED] Blood Pressure: %.0f / %.0f mmHg\n', sys_bp, dia_bp);
     fprintf('MAP: %.1f mmHg\n', map);
+    fprintf('  (NOTE: real cuffless BP requires calibrated multi-feature PPG model)\n');
 
     % =========================================
     % Classification

@@ -25,9 +25,7 @@ function m7_vital_dashboard(ppg, t, fs)
     % Dashboard
     % =========================================
 
-    figure('Name', ...
-        'M7: Blood Pressure & SpO2 Dashboard', ...
-        'Position', [100 100 1000 700]);
+    figure('Name', 'M7: Blood Pressure & SpO2 Dashboard');
     % =========================================
     % PPG Waveform
     % =========================================
